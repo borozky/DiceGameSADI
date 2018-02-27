@@ -26,22 +26,59 @@ public class GameEngineCallbackImpl implements GameEngineCallback
 		logger.setLevel(Level.FINE);
 	}
 
+	
 	@Override
 	public void intermediateResult(Player player, DicePair dicePair, GameEngine gameEngine)
 	{
-		// intermediate results logged at Level.FINE
-		logger.log(Level.FINE, "Intermediate data to log .. String.format() is good here!");
-		// TO DO: complete this method to log results
+		String log = String.format("%s: %s Dice 1: %s,  Dice 2: %s .. Total: %s", 
+			player.getPlayerName(),
+			"ROLLING",
+			dicePair.getDice1(),
+			dicePair.getDice2(),
+			dicePair.getDice1() + dicePair.getDice2()
+		);
+		//logger.log(Level.FINE, log);
+		System.out.println(log);
 	}
 
+	
 	@Override
 	public void result(Player player, DicePair result, GameEngine gameEngine)
 	{
-		// final results logged at Level.INFO
-		logger.log(Level.INFO, "Result data to log .. String.format() is good here!");
-		// TO DO: complete this method to log results
+		String log = String.format("%s: %s Dice 1: %s,  Dice 2: %s .. Total: %s", 
+			player.getPlayerName(),
+			"*RESULT*",
+			result.getDice1(),
+			result.getDice2(),
+			result.getDice1() + result.getDice2()
+		);
+		System.out.println(log);
 	}
 
-	// TO DO: complete the GameEngineCallback interface implementation
+	
+	@Override
+	public void intermediateHouseResult(DicePair dicePair, GameEngine gameEngine) {
+		String log = String.format("%s: %s Dice 1: %s,  Dice 2: %s .. Total: %s", 
+			"The House",
+			"ROLLING",
+			dicePair.getDice1(),
+			dicePair.getDice2(),
+			dicePair.getDice1() + dicePair.getDice2()
+		);
+		System.out.println(log);
+	}
+
+	
+	@Override
+	public void houseResult(DicePair result, GameEngine gameEngine) {
+		String log = String.format("%s: %s Dice 1: %s,  Dice 2: %s .. Total: %s", 
+			"The House",
+			"*HOUSE RESULT*",
+			result.getDice1(),
+			result.getDice2(),
+			result.getDice1() + result.getDice2()
+		);
+		System.out.println(log);
+	}
 
 }

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import model.DicePairImpl;
 import model.interfaces.DicePair;
+import model.interfaces.GameEngine;
 
 public class DicePairImplTests {
 
@@ -55,7 +56,7 @@ public class DicePairImplTests {
 	@Test
 	public void test_default_dice_pair_has_6_faces() {
 		int faces = dicePair.getNumFaces();
-		assertEquals(6, faces);
+		assertEquals(GameEngine.NUM_FACES, faces);
 	}
 	
 	// This may generate false positives!

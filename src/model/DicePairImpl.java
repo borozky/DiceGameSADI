@@ -1,10 +1,9 @@
 package model;
 
 import model.interfaces.DicePair;
+import model.interfaces.GameEngine;
 
 public class DicePairImpl implements DicePair {
-	
-	private static final int NUMFACES_STANDARD_CASINO_DICE = 6;
 	
 	private int dice1;
 	private int dice2;
@@ -12,7 +11,7 @@ public class DicePairImpl implements DicePair {
 	
 	
 	public DicePairImpl() {
-		this(NUMFACES_STANDARD_CASINO_DICE);
+		this(GameEngine.NUM_FACES);
 	}
 	
 	

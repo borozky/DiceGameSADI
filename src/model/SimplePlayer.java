@@ -12,31 +12,32 @@ public class SimplePlayer implements Player {
 	private int points = 0;
 	private DicePair rollResult = null;
 	
-	public SimplePlayer(String playerId, String playerName, int bet) {
-		if(bet <= 0) {
-			throw new IllegalArgumentException("Cannot place bet of " + bet);
-		}
-		
+	
+	public SimplePlayer(String playerId, String playerName, int initialPoints) {
 		this.playerId = playerId;
-		this.playerName = playerName;
-		this.bet = bet;
+		setPlayerName(playerName);
+		setPoints(initialPoints);
 	}
 
+	
 	@Override
 	public String getPlayerName() {
 		return playerName;
 	}
 
+	
 	@Override
 	public void setPlayerName(String playerName) {
 		this.playerName = playerName;
 	}
 
+	
 	@Override
 	public int getPoints() {
 		return points;
 	}
 
+	
 	@Override
 	public void setPoints(int points) {
 		if(points <= 0) {
@@ -46,6 +47,7 @@ public class SimplePlayer implements Player {
 		this.points = points;
 	}
 
+	
 	@Override
 	public String getPlayerId() {
 		return playerId;
@@ -54,12 +56,7 @@ public class SimplePlayer implements Player {
 	
 	@Override
 	public boolean placeBet(int bet) {
-		try {
-			if(bet <= 0) {
-				throw new IllegalArgumentException("Cannot place bet equal or below 0");
-			}
-		} catch(IllegalArgumentException e) {
-			System.err.println(e.getMessage());
+		if(bet <= 0) {
 			return false;
 		}
 		
@@ -67,19 +64,34 @@ public class SimplePlayer implements Player {
 		return true;
 	}
 
+	
 	@Override
 	public int getBet() {
 		return bet;
 	}
 
+	
 	@Override
 	public DicePair getRollResult() {
 		return rollResult;
 	}
+	
 
 	@Override
 	public void setRollResult(DicePair rollResult) {
 		this.rollResult = rollResult;
-		
 	}
+	
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Player) {
+			Player p = (Player) obj;
+			return getPlayerId().equals(p.getPlayerId());
+		}
+		
+		return false;
+	}
+	
+	
 }
