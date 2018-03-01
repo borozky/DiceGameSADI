@@ -58,9 +58,9 @@ public class DicePairImpl implements DicePair {
 	/**
 	 * Helper method for generate random numbers between min and max, inclusive.<br/>
 	 * 
-	 * @param min
-	 * @param max
-	 * @return
+	 * @param min Minimum number. Values above 0 are preferred.
+	 * @param max Maximum number. Values below <code>Integer.MAX_VALUE</code> are preferred.
+	 * @return int
 	 */
 	private int getRandomInt(int min, int max) {
 		return min + ((int) Math.floor(Math.random() * max));

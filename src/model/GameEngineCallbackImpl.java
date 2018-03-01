@@ -20,7 +20,7 @@ import model.interfaces.Player;
 public class GameEngineCallbackImpl implements GameEngineCallback
 {
 	
-	// NO BUSINESS LOGIC ALLOWED HERE
+	// NO BUSINESS LOGIC ALLOWED HERE (ie. Don't create/modify/delete entities)
 	
 	
 	private Logger logger = Logger.getLogger("assignment1");
@@ -72,6 +72,11 @@ public class GameEngineCallbackImpl implements GameEngineCallback
 	}
 	
 	
+	/**
+	 * Display players results
+	 * 
+	 * @param players
+	 */
 	private void displayResults(Collection<Player> players) {
 		for (Player player : players) {
 			// logger.log(logger.getLevel(), player);
