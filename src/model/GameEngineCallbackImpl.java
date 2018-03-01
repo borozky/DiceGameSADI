@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,67 +19,64 @@ import model.interfaces.Player;
  */
 public class GameEngineCallbackImpl implements GameEngineCallback
 {
+	
+	// NO BUSINESS LOGIC ALLOWED HERE
+	
+	
 	private Logger logger = Logger.getLogger("assignment1");
 
-	public GameEngineCallbackImpl()
-	{
+	public GameEngineCallbackImpl() {
 		// FINE shows rolling output, INFO only shows result
 		logger.setLevel(Level.FINE);
 	}
 
 	
 	@Override
-	public void intermediateResult(Player player, DicePair dicePair, GameEngine gameEngine)
-	{
-		String log = String.format("%s: %s Dice 1: %s,  Dice 2: %s .. Total: %s", 
-			player.getPlayerName(),
-			"ROLLING",
-			dicePair.getDice1(),
-			dicePair.getDice2(),
-			dicePair.getDice1() + dicePair.getDice2()
-		);
-		//logger.log(Level.FINE, log);
-		System.out.println(log);
+	public void intermediateResult(Player player, DicePair dicePair, GameEngine gameEngine) {
+		log(player.getPlayerName(), "ROLLING", dicePair);
 	}
 
 	
 	@Override
-	public void result(Player player, DicePair result, GameEngine gameEngine)
-	{
-		String log = String.format("%s: %s Dice 1: %s,  Dice 2: %s .. Total: %s", 
-			player.getPlayerName(),
-			"*RESULT*",
-			result.getDice1(),
-			result.getDice2(),
-			result.getDice1() + result.getDice2()
-		);
-		System.out.println(log);
+	public void result(Player player, DicePair result, GameEngine gameEngine) {
+		log(player.getPlayerName(), "*RESULT*", result);
 	}
 
 	
 	@Override
 	public void intermediateHouseResult(DicePair dicePair, GameEngine gameEngine) {
-		String log = String.format("%s: %s Dice 1: %s,  Dice 2: %s .. Total: %s", 
-			"The House",
-			"ROLLING",
-			dicePair.getDice1(),
-			dicePair.getDice2(),
-			dicePair.getDice1() + dicePair.getDice2()
-		);
-		System.out.println(log);
+		log("The House", "ROLLING", dicePair);
 	}
 
 	
 	@Override
 	public void houseResult(DicePair result, GameEngine gameEngine) {
-		String log = String.format("%s: %s Dice 1: %s,  Dice 2: %s .. Total: %s", 
-			"The House",
-			"*HOUSE RESULT*",
-			result.getDice1(),
-			result.getDice2(),
-			result.getDice1() + result.getDice2()
-		);
+		log("The House", "*HOUSE RESULT*", result);
+		
+		displayResults(gameEngine.getAllPlayers());
+	}
+	
+	
+	/**
+	 * Helper method to log dice result
+	 * 
+	 * @param playerName
+	 * @param title
+	 * @param dicePair
+	 */
+	private void log(String playerName, String title, DicePair dicePair) {
+		String log = String.format("%s: %s %s", playerName, title, dicePair);
+		
+		// logger.log(logger.getLevel(), log);
 		System.out.println(log);
+	}
+	
+	
+	private void displayResults(Collection<Player> players) {
+		for (Player player : players) {
+			// logger.log(logger.getLevel(), player);
+			System.out.println(player);
+		}
 	}
 
 }

@@ -11,10 +11,10 @@ import model.interfaces.Player;
 
 public class GameEngineImpl implements GameEngine {
 	
-	List<Player> players = new ArrayList<>();
+	private List<Player> players = new ArrayList<>();
 	
-	// used a collection here because of the word 'add' in addGameEngineCallback() method
-	List<GameEngineCallback> gameEngineCallbacks = new ArrayList<>();
+	// used a java.util.List here because of the word 'add' in addGameEngineCallback() method
+	private List<GameEngineCallback> gameEngineCallbacks = new ArrayList<>();
 	
 
 	@Override
@@ -30,27 +30,36 @@ public class GameEngineImpl implements GameEngine {
 	@Override
 	public void rollPlayer(Player player, int initialDelay, int finalDelay, int delayIncrement)
 	{
-		// 5 pre-attempts before the result is called
-		// because in OutputTrace.txt, there are 5 attempts before the *RESULT*
-		int numOfPreAttempts = GameEngine.NUM_FACES - 1;
+		// 5 rolls before the result is called
+		// because in OutputTrace.txt, there are 5 rolls before the *RESULT*
+		int numDiceRolls = GameEngine.NUM_FACES - 1;
 		
 		try {
-			// pre-attempts
+			
+			// 5 rolls before the final. 
+			// Delay first, then delay by {delayIncrements} ms after each subsequent rolls.
 			Thread.sleep(initialDelay);
-			for(int i = 0; i < numOfPreAttempts; i++) {
+			for(int i = 0; i < numDiceRolls; i++) {
+				DicePair dicePair = new DicePairImpl();
 				for (GameEngineCallback callback : gameEngineCallbacks) {
-					DicePair dicePair = new DicePairImpl();
 					callback.intermediateResult(player, dicePair, this);
 				}
 				Thread.sleep(delayIncrement);
 			}
 			
-			// result
+			
+			// Final roll (6th roll). 
+			DicePair resultingDicePair = new DicePairImpl();
+			player.setRollResult(resultingDicePair);
+			
 			Thread.sleep(finalDelay);
+			
 			for (GameEngineCallback callback : gameEngineCallbacks) {
-				DicePair dicePair = new DicePairImpl();
-				callback.result(player, dicePair, this);
+				callback.result(player, resultingDicePair, this);
 			}
+			
+			
+			
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -61,28 +70,35 @@ public class GameEngineImpl implements GameEngine {
 	@Override
 	public void rollHouse(int initialDelay, int finalDelay, int delayIncrement) {
 		
-		// 5 pre-attempts before the result is called
-		// because in OutputTrace.txt, there are 5 attempts before the *RESULT*
-		int numOfPreAttempts = GameEngine.NUM_FACES - 1;
+		// 5 rolls before the final roll
+		// because in OutputTrace.txt, there are 5 rolls before the *RESULT*
+		int numDiceRolls = GameEngine.NUM_FACES - 1;
 		
 		try {
 			
-			// pre-attempts
+			// 5 rolls before the final. 
+			// Delay first, then delay by {delayIncrements} ms after each subsequent rolls.
 			Thread.sleep(initialDelay);
-			for(int i = 0; i < numOfPreAttempts; i++) {
+			for(int i = 0; i < numDiceRolls; i++) {
+				DicePair dicePair = new DicePairImpl();
 				for (GameEngineCallback callback : gameEngineCallbacks) {
-					DicePair dicePair = new DicePairImpl();
 					callback.intermediateHouseResult(dicePair, this);
-					Thread.sleep(delayIncrement);
 				}
+				Thread.sleep(delayIncrement);
 			}
 			
-			// result
+			
+			// Final house roll. 
+			// Update all players' points first before triggering all callbacks 
+			DicePair houseDicePairResult = new DicePairImpl();
+			updatePlayersBetPoints(this.players, houseDicePairResult);
+			
+			Thread.sleep(finalDelay);
+			
 			for (GameEngineCallback callback : gameEngineCallbacks) {
-				DicePair dicePair = new DicePairImpl();
-				Thread.sleep(finalDelay);
-				callback.houseResult(dicePair, this);
+				callback.houseResult(houseDicePairResult, this);
 			}
+			
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -110,7 +126,11 @@ public class GameEngineImpl implements GameEngine {
 
 	@Override
 	public boolean removePlayer(Player player) {
-		return players.remove(player);
+		/**
+		 * Removes the player based on players' IDs
+		 * @see SimplePlayer#equals
+		 */
+		return players.remove(player); 
 	}
 
 	
@@ -130,5 +150,47 @@ public class GameEngineImpl implements GameEngine {
 	public Collection<Player> getAllPlayers() {
 		return players;
 	}
+	
+	
+	/**
+	 * Update players bet points
+	 * 
+	 * @param players
+	 * @param houseDicePairResult
+	 */
+	private void updatePlayersBetPoints(List<Player> players, DicePair houseDicePairResult) {
+		for (Player player : players) {
+			
+			DicePair rollResult = player.getRollResult();
+			if (rollResult == null) {
+				System.err.printf("Player \"%s\" has no roll result", player.getPlayerName());
+				continue;
+			}
+			
+			int sumPlayer = rollResult.getDice1() + rollResult.getDice2();
+			int sumHouse = houseDicePairResult.getDice1() + houseDicePairResult.getDice2();
+			int newPoints = player.getPoints();
+			
+			
+			// Player wins vs house
+			if (sumPlayer > sumHouse) {
+				newPoints = player.getPoints() + player.getBet();
+			} 
+			
+			// House wins
+			else if (sumPlayer < sumHouse) {
+				newPoints = player.getPoints() - player.getBet();
+			} 
+			
+			// Draw (sumPlayer === sumHouse)
+			else {
+				continue;
+			}
+			
+			player.setPoints(newPoints);
+		}
+	}
+	
+	
 
 }

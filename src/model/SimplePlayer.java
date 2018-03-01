@@ -41,7 +41,9 @@ public class SimplePlayer implements Player {
 	@Override
 	public void setPoints(int points) {
 		if(points <= 0) {
-			throw new IllegalArgumentException("Cannot set points of player: " + "\"" + playerName + "\" to " + points);
+			throw new IllegalArgumentException(
+				"Cannot set points of player: " + "\"" + playerName + "\" to " + points  + ". Points must be above 0"
+			);
 		}
 		
 		this.points = points;
@@ -83,6 +85,8 @@ public class SimplePlayer implements Player {
 	}
 	
 	
+
+	// Used by GameEngineImpl#removePlayer for removing players based on their IDs
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Player) {
@@ -93,5 +97,10 @@ public class SimplePlayer implements Player {
 		return false;
 	}
 	
+	
+	@Override
+	public String toString() {
+		return String.format("Player: id=%s, name=%s, points=%s", playerId, playerName, points);
+	}
 	
 }
