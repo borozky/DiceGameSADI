@@ -15,7 +15,7 @@ public class GameEngineImpl implements GameEngine {
 	
 	// used a java.util.List here because of the word 'add' in addGameEngineCallback() method
 	private List<GameEngineCallback> gameEngineCallbacks = new ArrayList<>();
-	
+
 
 	@Override
 	public boolean placeBet(Player player, int bet) {
