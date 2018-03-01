@@ -22,38 +22,36 @@ public class GameEngineCallbackImpl implements GameEngineCallback
 	
 	// NO BUSINESS LOGIC ALLOWED HERE (ie. Don't create/modify/delete entities)
 	
-	
-	private Logger logger = Logger.getLogger("assignment1");
+	private Logger console = Logger.getLogger("assignment1");
 
 	public GameEngineCallbackImpl() {
-		// FINE shows rolling output, INFO only shows result
-		logger.setLevel(Level.FINE);
+		console.setLevel(Level.INFO);
 	}
 
 	
 	@Override
 	public void intermediateResult(Player player, DicePair dicePair, GameEngine gameEngine) {
-		log(player.getPlayerName(), "ROLLING", dicePair);
+		displayRoll(player.getPlayerName(), "ROLLING", dicePair);
 	}
 
 	
 	@Override
 	public void result(Player player, DicePair result, GameEngine gameEngine) {
-		log(player.getPlayerName(), "*RESULT*", result);
+		displayRoll(player.getPlayerName(), "*RESULT*", result);
 	}
 
 	
 	@Override
 	public void intermediateHouseResult(DicePair dicePair, GameEngine gameEngine) {
-		log("The House", "ROLLING", dicePair);
+		displayRoll("The House", "ROLLING", dicePair);
 	}
 
 	
 	@Override
 	public void houseResult(DicePair result, GameEngine gameEngine) {
-		log("The House", "*HOUSE RESULT*", result);
+		displayRoll("The House", "*RESULT*", result);
 		
-		displayResults(gameEngine.getAllPlayers());
+		displayResult(gameEngine.getAllPlayers());
 	}
 	
 	
@@ -64,11 +62,10 @@ public class GameEngineCallbackImpl implements GameEngineCallback
 	 * @param title
 	 * @param dicePair
 	 */
-	private void log(String playerName, String title, DicePair dicePair) {
+	private void displayRoll(String playerName, String title, DicePair dicePair) {
 		String log = String.format("%s: %s %s", playerName, title, dicePair);
 		
-		// logger.log(logger.getLevel(), log);
-		System.out.println(log);
+		console.log(console.getLevel(), log);
 	}
 	
 	
@@ -77,10 +74,9 @@ public class GameEngineCallbackImpl implements GameEngineCallback
 	 * 
 	 * @param players
 	 */
-	private void displayResults(Collection<Player> players) {
+	private void displayResult(Collection<Player> players) {
 		for (Player player : players) {
-			// logger.log(logger.getLevel(), player);
-			System.out.println(player);
+			console.log(console.getLevel(), player.toString());
 		}
 	}
 
