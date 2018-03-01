@@ -11,6 +11,38 @@ import model.interfaces.Player;
 
 public class GameEngineImpl implements GameEngine {
 	
+	
+	// These factory class and custom constructors are just for the 
+	// sake of making GameEngineImpl class testable
+	// Also this helps achieve low coupling
+	public interface DicePairFactory {
+		DicePair createDicePair();
+	}
+	
+	private DicePairFactory dicePairFactory;
+	
+	public GameEngineImpl() {
+		this.dicePairFactory = new DicePairFactory() {
+			@Override
+			public DicePair createDicePair() {
+				return new DicePairImpl();
+			}
+		};
+	}
+	
+	public GameEngineImpl(DicePairFactory dicePairFactory) {
+		this.dicePairFactory = dicePairFactory;
+	}
+
+	public void setDicePairFactory(DicePairFactory dicePairFactory) {
+		this.dicePairFactory = dicePairFactory;
+	}
+
+	
+
+
+
+
 	private List<Player> players = new ArrayList<>();
 	
 	// used a java.util.List here because of the word 'add' in addGameEngineCallback() method
@@ -40,7 +72,7 @@ public class GameEngineImpl implements GameEngine {
 			// Delay first, then delay by {delayIncrements} ms after each subsequent rolls.
 			Thread.sleep(initialDelay);
 			for(int i = 0; i < numDiceRolls; i++) {
-				DicePair dicePair = new DicePairImpl();
+				DicePair dicePair = dicePairFactory.createDicePair(); 	   // use factories instead of new DicePairImpl();
 				for (GameEngineCallback callback : gameEngineCallbacks) {
 					callback.intermediateResult(player, dicePair, this);
 				}
@@ -49,7 +81,7 @@ public class GameEngineImpl implements GameEngine {
 			
 			
 			// Final roll (6th roll). 
-			DicePair resultingDicePair = new DicePairImpl();
+			DicePair resultingDicePair = dicePairFactory.createDicePair(); // use factories instead of new DicePairImpl();
 			player.setRollResult(resultingDicePair);
 			
 			Thread.sleep(finalDelay);
@@ -80,7 +112,7 @@ public class GameEngineImpl implements GameEngine {
 			// Delay first, then delay by {delayIncrements} ms after each subsequent rolls.
 			Thread.sleep(initialDelay);
 			for(int i = 0; i < numDiceRolls; i++) {
-				DicePair dicePair = new DicePairImpl();
+				DicePair dicePair = dicePairFactory.createDicePair();	// use factories instead of new DicePairImpl();
 				for (GameEngineCallback callback : gameEngineCallbacks) {
 					callback.intermediateHouseResult(dicePair, this);
 				}
@@ -90,7 +122,7 @@ public class GameEngineImpl implements GameEngine {
 			
 			// Final house roll. 
 			// Update all players' points first before triggering all callbacks 
-			DicePair houseDicePairResult = new DicePairImpl();
+			DicePair houseDicePairResult = dicePairFactory.createDicePair(); // use factories instead of new DicePairImpl();
 			updatePlayersBetPoints(this.players, houseDicePairResult);
 			
 			Thread.sleep(finalDelay);
@@ -163,7 +195,7 @@ public class GameEngineImpl implements GameEngine {
 			
 			DicePair rollResult = player.getRollResult();
 			if (rollResult == null) {
-				System.err.printf("Player \"%s\" has no roll result", player.getPlayerName());
+				System.err.printf("Player \"%s\" (id: %s) has no roll result\n", player.getPlayerName(), player.getPlayerId());
 				continue;
 			}
 			
@@ -190,7 +222,6 @@ public class GameEngineImpl implements GameEngine {
 			player.setPoints(newPoints);
 		}
 	}
-	
 	
 
 }
