@@ -91,12 +91,15 @@ public class SimplePlayerTests {
 	
 	
 	@Test
-	public void test_placing_above_0_bet_is_allowed() {
-		try {
-			simplePlayer.placeBet(1);
-		} catch(Exception e) {
-			fail("Setting a proper bet above 0 should not throw exception and should be allowed");
-		}
+	public void test_placing_bet_more_than_the_current_points_is_not_allowed() {
+		boolean isBetPlaced = simplePlayer.placeBet(3);
+		assertFalse(isBetPlaced);
 	}
 	
+	
+	@Test
+	public void test_placing_above_0_bet_is_allowed() {
+		boolean isBetPlaced = simplePlayer.placeBet(1);
+		assertTrue(isBetPlaced);
+	}
 }

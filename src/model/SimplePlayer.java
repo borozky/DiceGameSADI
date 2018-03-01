@@ -58,7 +58,7 @@ public class SimplePlayer implements Player {
 	
 	@Override
 	public boolean placeBet(int bet) {
-		if(bet <= 0) {
+		if(bet <= 0 || bet > points) {
 			return false;
 		}
 		
