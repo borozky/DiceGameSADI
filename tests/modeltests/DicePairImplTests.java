@@ -25,9 +25,7 @@ public class DicePairImplTests {
 	
 
 	@After
-	public void tearDown() throws Exception {
-		dicePair = null;
-	}
+	public void tearDown() throws Exception {}
 
 	
 	@Test
