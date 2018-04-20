@@ -2,8 +2,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-@RunWith(Suite.class)
-@SuiteClasses({})
-public class AllTests {
+import modeltests.DicePairImplTests;
+import modeltests.GameEngineImplTests;
+import modeltests.SimplePlayerTests;
 
+@RunWith(Suite.class)
+@SuiteClasses({
+	SimplePlayerTests.class,
+	GameEngineImplTests.class,
+	DicePairImplTests.class,
+})
+public class AllTests {
+	
 }

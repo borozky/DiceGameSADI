@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,30 +19,65 @@ import model.interfaces.Player;
  */
 public class GameEngineCallbackImpl implements GameEngineCallback
 {
-	private Logger logger = Logger.getLogger("assignment1");
+	
+	// NO BUSINESS LOGIC ALLOWED HERE (ie. Don't create/modify/delete entities)
+	
+	private Logger console = Logger.getLogger("assignment1");
 
-	public GameEngineCallbackImpl()
-	{
-		// FINE shows rolling output, INFO only shows result
-		logger.setLevel(Level.FINE);
+	public GameEngineCallbackImpl() {
+		console.setLevel(Level.INFO);
 	}
 
+	
 	@Override
-	public void intermediateResult(Player player, DicePair dicePair, GameEngine gameEngine)
-	{
-		// intermediate results logged at Level.FINE
-		logger.log(Level.FINE, "Intermediate data to log .. String.format() is good here!");
-		// TO DO: complete this method to log results
+	public void intermediateResult(Player player, DicePair dicePair, GameEngine gameEngine) {
+		displayRoll(player.getPlayerName(), "ROLLING", dicePair);
 	}
 
+	
 	@Override
-	public void result(Player player, DicePair result, GameEngine gameEngine)
-	{
-		// final results logged at Level.INFO
-		logger.log(Level.INFO, "Result data to log .. String.format() is good here!");
-		// TO DO: complete this method to log results
+	public void result(Player player, DicePair result, GameEngine gameEngine) {
+		displayRoll(player.getPlayerName(), "*RESULT*", result);
 	}
 
-	// TO DO: complete the GameEngineCallback interface implementation
+	
+	@Override
+	public void intermediateHouseResult(DicePair dicePair, GameEngine gameEngine) {
+		displayRoll("The House", "ROLLING", dicePair);
+	}
+
+	
+	@Override
+	public void houseResult(DicePair result, GameEngine gameEngine) {
+		displayRoll("The House", "*RESULT*", result);
+		
+		displayResult(gameEngine.getAllPlayers());
+	}
+	
+	
+	/**
+	 * Helper method to log dice result
+	 * 
+	 * @param playerName
+	 * @param title
+	 * @param dicePair
+	 */
+	private void displayRoll(String playerName, String title, DicePair dicePair) {
+		String log = String.format("%s: %s %s", playerName, title, dicePair);
+		
+		console.log(console.getLevel(), log);
+	}
+	
+	
+	/**
+	 * Display players results
+	 * 
+	 * @param players
+	 */
+	private void displayResult(Collection<Player> players) {
+		for (Player player : players) {
+			console.log(console.getLevel(), player.toString());
+		}
+	}
 
 }
