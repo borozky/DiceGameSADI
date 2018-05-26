@@ -33,9 +33,7 @@ public class MainPanel extends JPanel {
 	private JLabel initialPointsLabel;
 	private JTextField initialPointsField;
 	
-	/**
-	 * Create the panel.
-	 */
+
 	public MainPanel() {
 		
 		Font defaultFont = new Font("Segoe UI", Font.PLAIN, 12);
@@ -44,11 +42,14 @@ public class MainPanel extends JPanel {
 		setBackground(Color.WHITE);
 		setLayout(new BorderLayout(0, 0));
 		
+		
+		
 		// FORM CONTAINER
 		JPanel topPanel = new JPanel();
 		topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		topPanel.setLayout(new BorderLayout(0, 0));
 		add(topPanel, BorderLayout.NORTH);
+		
 		
 		
 		// GAME INSTRUCTIONS
@@ -63,10 +64,13 @@ public class MainPanel extends JPanel {
 		gameInstructionsPanel.add(gameInstructionsLabel);
 		
 		
+		
 		// FORM
 		JPanel addPlayerForm = new JPanel();
 		addPlayerForm.setLayout(new BorderLayout(0, 3));
 		topPanel.add(addPlayerForm, BorderLayout.SOUTH);
+		
+		
 		
 		// player name field
 		JPanel playerNameSection = new JPanel();
@@ -82,6 +86,9 @@ public class MainPanel extends JPanel {
 		playerNameField.setColumns(10);
 		playerNameSection.add(playerNameField, BorderLayout.CENTER);
 		
+		
+		
+		// initial points field
 		JPanel initialPointsSection = new JPanel();
 		addPlayerForm.add(initialPointsSection, BorderLayout.CENTER);
 		initialPointsSection.setLayout(new BorderLayout(0, 0));
@@ -96,11 +103,13 @@ public class MainPanel extends JPanel {
 		initialPointsSection.add(initialPointsField, BorderLayout.CENTER);
 		initialPointsField.setColumns(10);
 		
+		
+		
+		// player bet field
 		JPanel playerBetSection = new JPanel();
 		playerBetSection.setLayout(new BorderLayout(5, 0));
 		addPlayerForm.add(playerBetSection, BorderLayout.SOUTH);
 		
-		// player bet field
 		playerBetLabel = new JLabel("Player bet");
 		playerBetLabel.setBorder(new EmptyBorder(0, 0, 0, 14));
 		playerBetLabel.setFont(defaultFont);
@@ -114,6 +123,8 @@ public class MainPanel extends JPanel {
 		addPlayerButton = new JButton("Add player");
 		addPlayerButton.setFont(defaultFont);
 		playerBetSection.add(addPlayerButton, BorderLayout.EAST);
+		
+		
 		
 		// area where 'Start Game' button is placed
 		JPanel bottomPanel = new JPanel();

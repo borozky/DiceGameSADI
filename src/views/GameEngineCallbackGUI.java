@@ -38,7 +38,11 @@ public class GameEngineCallbackGUI extends JFrame implements GameEngineCallback 
 	private static final long serialVersionUID = 142234345346756757L;
 	
 	JMenuBar menuBar;
+	
 	private JMenu fileMenu;
+	private JMenuItem file$exitMenu;
+	
+	
 	private JMenu helpMenu;
 	private JMenuItem help$aboutMenu;
 	
@@ -101,7 +105,11 @@ public class GameEngineCallbackGUI extends JFrame implements GameEngineCallback 
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
+		// FILE menu
 		fileMenu = new JMenu("File");
+		file$exitMenu = new JMenuItem("Exit");
+		
+		// HELP menu
 		helpMenu = new JMenu("Help");
 		help$aboutMenu = new JMenuItem("About");
 		menuBar.add(fileMenu);
