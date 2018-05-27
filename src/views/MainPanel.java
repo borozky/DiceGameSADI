@@ -1,114 +1,149 @@
 package views;
 
-import javax.swing.JPanel;
+import java.awt.Font;
+
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
-import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import controllers.AddPlayerButtonListener;
-import controllers.StartGameButtonListener;
-
-import javax.swing.SwingConstants;
+import controllers.RollPlayerListener;
+import controllers.interfaces.RollPlayerDataSource;
+import model.interfaces.DicePair;
+import model.interfaces.GameEngine;
+import model.interfaces.Player;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import javax.swing.border.LineBorder;
 
-public class MainPanel extends JPanel {
+/**
+ * Holds the bet form, the player's dice and the house dice. 
+ * <p>This component implements {@link RollPlayerDataSource} to supply data into 
+ * {@link RollPlayerListener}.
+ * 
+ * @author Joshua Orozco
+ *
+ */
+public class MainPanel extends JPanel implements ListOfPlayersPanel.Delegate, RollPlayerDataSource {
+	private static final long serialVersionUID = -2154448330526344275L;
 	
-	private JTextField playerNameField;
+	Font defaultFont = new Font("Segoe UI", Font.PLAIN, 12);
+	
 	private JTextField playerBetField;
-	private JLabel gameInstructionsLabel;
-	private JLabel playerNameLabel;
+	private JLabel headingLabel;
 	private JLabel playerBetLabel;
-	private JButton addPlayerButton;
-	private JButton startGameButton;
+	private JButton rollButton;
 	private JLabel initialPointsLabel;
-	private JTextField initialPointsField;
 	
-
-	public MainPanel() {
-		
-		Font defaultFont = new Font("Segoe UI", Font.PLAIN, 12);
+	private Player selectedPlayer = null;
+	private JLabel initialPointsValueLabel;
+	private JPanel playerDetailsPanel;
+	private JPanel placeBetForm;
+	
+	private JLabel diceOneLabel;
+	private JLabel diceTwoLabel;
+	private JLabel totalResultLabel;
+	private JPanel diceWrapperPanel;
+	private JPanel houseDicePanel;
+	private JLabel houseDiceOneLabel;
+	private JLabel houseDiceTwoLabel;
+	private JLabel houseTotalResultLabel;
+	private JPanel playerDicePanel;
+	
+	private RollPlayerListener rollListener;
+	
+	public MainPanel(RollPlayerListener rollListener) {
+		this.rollListener = rollListener;
 		
 		// background & layout
+		setBorder(new LineBorder(Color.LIGHT_GRAY));
 		setBackground(Color.WHITE);
 		setLayout(new BorderLayout(0, 0));
 		
+		// Setup subcomponents
+		setupPlayerDetailsPanel();
+		setupHeadingPanel();
+		setupPlaceBetForm();
+		setupInitialPointRow();
+		setupPlayerBetSection();
+		setupDiceWrapperPanel();
+		setupPlayerDice();
+		setupHouseDice();
 		
+		// interaction
+		enableInteraction();
+		clearInput();
+		setSelectedPlayer(null);
+	}
+
+	/**
+	 * Sets up the player details panel. The panel will wrap the bet form and the heading
+	 */
+	private void setupPlayerDetailsPanel() {
+		playerDetailsPanel = new JPanel();
+		playerDetailsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		playerDetailsPanel.setLayout(new BorderLayout(0, 0));
+		add(playerDetailsPanel, BorderLayout.NORTH);
+	}
+
+	
+	/**
+	 * Sets up the heading section of this component
+	 */
+	private void setupHeadingPanel() {
+		JPanel headingPanel = new JPanel();
+		headingPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
+		headingPanel.setLayout(new BorderLayout(0, 0));
+		playerDetailsPanel.add(headingPanel, BorderLayout.NORTH);
 		
-		// FORM CONTAINER
-		JPanel topPanel = new JPanel();
-		topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		topPanel.setLayout(new BorderLayout(0, 0));
-		add(topPanel, BorderLayout.NORTH);
-		
-		
-		
-		// GAME INSTRUCTIONS
-		JPanel gameInstructionsPanel = new JPanel();
-		gameInstructionsPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
-		gameInstructionsPanel.setLayout(new BorderLayout(0, 0));
-		topPanel.add(gameInstructionsPanel, BorderLayout.NORTH);
-		
-		gameInstructionsLabel = new JLabel("<html><b>Rules:</b> Any player that has higher dice number than the house wins the bet.</html>");
-		gameInstructionsLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		gameInstructionsLabel.setFont(defaultFont);
-		gameInstructionsPanel.add(gameInstructionsLabel);
-		
-		
-		
+		headingLabel = new JLabel("-");
+		headingLabel.setForeground(Color.BLACK);
+		headingLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		headingLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+		headingPanel.add(headingLabel);
+	}
+
+	/**
+	 * Sets up the form that wrap the player bet row
+	 */
+	private void setupPlaceBetForm() {
 		// FORM
-		JPanel addPlayerForm = new JPanel();
-		addPlayerForm.setLayout(new BorderLayout(0, 3));
-		topPanel.add(addPlayerForm, BorderLayout.SOUTH);
-		
-		
-		
-		// player name field
-		JPanel playerNameSection = new JPanel();
-		playerNameSection.setLayout(new BorderLayout(5, 0));
-		addPlayerForm.add(playerNameSection, BorderLayout.NORTH);
-		
-		playerNameLabel = new JLabel("Player name");
-		playerNameLabel.setFont(defaultFont);
-		playerNameSection.add(playerNameLabel, BorderLayout.WEST);
-		
-		playerNameField = new JTextField();
-		playerNameField.setFont(defaultFont);
-		playerNameField.setColumns(10);
-		playerNameSection.add(playerNameField, BorderLayout.CENTER);
-		
-		
-		
-		// initial points field
+		placeBetForm = new JPanel();
+		placeBetForm.setLayout(new BorderLayout(0, 3));
+		playerDetailsPanel.add(placeBetForm, BorderLayout.SOUTH);
+	}
+	
+	/**
+	 * Sets up the initial points row
+	 */
+	private void setupInitialPointRow() {
+		// initial points
 		JPanel initialPointsSection = new JPanel();
-		addPlayerForm.add(initialPointsSection, BorderLayout.CENTER);
+		placeBetForm.add(initialPointsSection, BorderLayout.CENTER);
 		initialPointsSection.setLayout(new BorderLayout(0, 0));
 		
 		initialPointsLabel = new JLabel("Initial Points  ");
 		initialPointsLabel.setFont(defaultFont);
 		initialPointsSection.add(initialPointsLabel, BorderLayout.WEST);
 		
-		initialPointsField = new JTextField();
-		initialPointsField.setPreferredSize(new Dimension(6, 23));
-		initialPointsField.setFont(defaultFont);
-		initialPointsSection.add(initialPointsField, BorderLayout.CENTER);
-		initialPointsField.setColumns(10);
-		
-		
-		
-		// player bet field
+		initialPointsValueLabel = new JLabel("-");
+		initialPointsValueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		initialPointsSection.add(initialPointsValueLabel, BorderLayout.CENTER);
+				
+	}
+	
+	/**
+	 * Sets up the player bet row
+	 */
+	private void setupPlayerBetSection() {
+		// PLAYER BET SECTION
 		JPanel playerBetSection = new JPanel();
 		playerBetSection.setLayout(new BorderLayout(5, 0));
-		addPlayerForm.add(playerBetSection, BorderLayout.SOUTH);
+		placeBetForm.add(playerBetSection, BorderLayout.SOUTH);
 		
 		playerBetLabel = new JLabel("Player bet");
 		playerBetLabel.setBorder(new EmptyBorder(0, 0, 0, 14));
@@ -120,77 +155,233 @@ public class MainPanel extends JPanel {
 		playerBetField.setColumns(10);
 		playerBetSection.add(playerBetField, BorderLayout.CENTER);
 		
-		addPlayerButton = new JButton("Add player");
-		addPlayerButton.setFont(defaultFont);
-		playerBetSection.add(addPlayerButton, BorderLayout.EAST);
-		
-		
-		
-		// area where 'Start Game' button is placed
-		JPanel bottomPanel = new JPanel();
-		bottomPanel.setBackground(Color.WHITE);
-		FlowLayout flowLayout = (FlowLayout) bottomPanel.getLayout();
-		flowLayout.setVgap(10);
-		flowLayout.setHgap(10);
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		add(bottomPanel, BorderLayout.SOUTH);
-		
-		startGameButton = new JButton("Start game");
-		startGameButton.setFont(defaultFont);
-		bottomPanel.add(startGameButton);
-		
-		enableInteraction();
-		clearInput();
+		rollButton = new JButton("Roll");
+		rollButton.setPreferredSize(new Dimension(81, 23));
+		rollButton.setFont(defaultFont);
+		rollButton.addMouseListener(rollListener);
+		playerBetSection.add(rollButton, BorderLayout.EAST);
 	}
 	
+	/**
+	 * Sets up the panel that will wrap the player and house dice
+	 */
+	private void setupDiceWrapperPanel() {
+		// Area where the player's dice and house dice are located
+		diceWrapperPanel = new JPanel();
+		diceWrapperPanel.setPreferredSize(new Dimension(10, 100));
+		diceWrapperPanel.setBackground(Color.WHITE);
+		add(diceWrapperPanel, BorderLayout.SOUTH);
+		diceWrapperPanel.setLayout(new BorderLayout(0, 0));
+	}
+	
+	/**
+	 * Sets the panel that will hold the player's dice
+	 */
+	private void setupPlayerDice() {
+		// PLAYER DICE
+		playerDicePanel = new JPanel();
+		playerDicePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		diceWrapperPanel.add(playerDicePanel, BorderLayout.WEST);
+		playerDicePanel.setLayout(new BorderLayout(10, 10));
+		
+		diceOneLabel = new JLabel("-");
+		playerDicePanel.add(diceOneLabel, BorderLayout.WEST);
+		diceOneLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+		
+		diceTwoLabel = new JLabel("-");
+		playerDicePanel.add(diceTwoLabel, BorderLayout.EAST);
+		diceTwoLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+		
+		totalResultLabel = new JLabel("Player: -");
+		playerDicePanel.add(totalResultLabel, BorderLayout.SOUTH);
+		totalResultLabel.setPreferredSize(new Dimension(80, 14));
+		totalResultLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));		
+	}
+	
+	/**
+	 * Sets up the panel that will hold the house dice
+	 */
+	private void setupHouseDice() {
+		// HOUSE DICE
+		houseDicePanel = new JPanel();
+		houseDicePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		diceWrapperPanel.add(houseDicePanel, BorderLayout.EAST);
+		houseDicePanel.setLayout(new BorderLayout(5, 5));
+		
+		houseDiceOneLabel = new JLabel("-");
+		houseDiceOneLabel.setForeground(new Color(0, 153, 102));
+		houseDiceOneLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+		houseDicePanel.add(houseDiceOneLabel, BorderLayout.WEST);
+		
+		houseDiceTwoLabel = new JLabel("-");
+		houseDiceTwoLabel.setForeground(new Color(0, 153, 102));
+		houseDiceTwoLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+		houseDicePanel.add(houseDiceTwoLabel, BorderLayout.EAST);
+		
+		houseTotalResultLabel = new JLabel("House: -");
+		houseTotalResultLabel.setForeground(new Color(0, 153, 102));
+		houseTotalResultLabel.setPreferredSize(new Dimension(80, 14));
+		houseTotalResultLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		houseDicePanel.add(houseTotalResultLabel, BorderLayout.SOUTH);
+	}
+	
+	/**
+	 * Gets the currently selected player.
+	 * @return
+	 */
+	public Player getSelectedPlayer() {
+		return selectedPlayer;
+	}
+	
+	/**
+	 * Updates the selected player. If a player is selected, it will display 
+	 * the player's current information and player's dice roll result
+	 * 
+	 * @param selectedPlayer
+	 */
+	public void setSelectedPlayer(Player selectedPlayer) {
+		this.selectedPlayer = selectedPlayer;
+		
+		if (selectedPlayer == null) {
+			headingLabel.setText("Select a player");
+			placeBetForm.setVisible(false);
+			playerDicePanel.setVisible(false);
+			setPlayerDice(null);
+		}
+		else {
+			playerDicePanel.setVisible(true);
+			placeBetForm.setVisible(true);
+			headingLabel.setText(selectedPlayer.getPlayerName());
+			initialPointsValueLabel.setText(Integer.toString(selectedPlayer.getPoints()));
+			playerBetField.setText(Integer.toString(selectedPlayer.getBet()));
+			setPlayerDice(selectedPlayer.getRollResult());
+		}
+		
+	}
+	
+	/**
+	 * Disabled the player bet field and the roll button
+	 */
 	public void disableInteraction() {
-		startGameButton.setEnabled(false);
-		playerNameField.setEnabled(false);
 		playerBetField.setEnabled(false);
-		addPlayerButton.setEnabled(false);
+		rollButton.setEnabled(false);
 	}
 	
+	/**
+	 * Enabled the bet field and the roll button
+	 */
 	public void enableInteraction() {
-		startGameButton.setEnabled(true);
-		playerNameField.setEnabled(true);
 		playerBetField.setEnabled(true);
-		addPlayerButton.setEnabled(true);
+		rollButton.setEnabled(true);
 	}
 	
+	/**
+	 * Gets the selected players name. 
+	 * @return If there are no selected players, this will return null.
+	 */
 	public String getPlayerName() {
-		return playerNameField.getText();
+		if (selectedPlayer != null) {
+			return selectedPlayer.getPlayerName();
+		}
+		return null;
 	}
 	
+	/**
+	 * Get the player's initial points as String value.
+	 * @return If there are no selected players, this will return null.
+	 */
 	public String getInitialPoints() {
-		return initialPointsField.getText();
+		if (selectedPlayer != null) {
+			return Integer.toString(selectedPlayer.getPoints());
+		}
+		return null;
 	}
 	
+	/**
+	 * Updates the panel that represents the dice
+	 * @param dicePair
+	 */
+	public void setPlayerDice(DicePair dicePair) {
+		if (dicePair != null) {
+			diceOneLabel.setText(Integer.toString(dicePair.getDice1()));
+			diceTwoLabel.setText(Integer.toString(dicePair.getDice2()));
+			totalResultLabel.setText("Player: " + (dicePair.getDice1() + dicePair.getDice2()) );
+		}
+		else {
+			diceOneLabel.setText("-");
+			diceTwoLabel.setText("-");
+			totalResultLabel.setText("Player: ");
+		}
+	}
+	
+	/**
+	 * Updates the panel that represents the house dice
+	 * @param houseDice
+	 */
+	public void setHouseDice(DicePair houseDice) {
+		if (houseDice != null) {
+			houseDiceOneLabel.setText(Integer.toString(houseDice.getDice1()));
+			houseDiceTwoLabel.setText(Integer.toString(houseDice.getDice2()));
+			houseTotalResultLabel.setText("House: " + (houseDice.getDice1() + houseDice.getDice2()));
+		}
+		else {
+			houseDiceOneLabel.setText("-");
+			houseDiceTwoLabel.setText("-");
+			houseTotalResultLabel.setText("House: ");
+		}
+	}
+	
+	/**
+	 * Gets the players bet as String
+	 * @return
+	 */
 	public String getPlayerBet() {
 		return playerBetField.getText();
 	}
 	
+	/**
+	 * Displays a pop-up error message
+	 * @param errorMessage
+	 */
 	public void displayErrorMessage(String errorMessage) {
 		JOptionPane.showMessageDialog(null, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 	
-	public void onAddPlayer(AddPlayerButtonListener listener) {
-		addPlayerButton.addMouseListener(listener);
-	}
-	
+	/**
+	 * Clears the bet field
+	 */
 	public void clearInput() {
-		playerNameField.setText(null);
 		playerBetField.setText(null);
-		initialPointsField.setText(null);
-		
-		// focus on playerNameField
-		playerNameField.grabFocus();
 	}
 	
-	public void onStartGame(StartGameButtonListener listener) {
-		startGameButton.addMouseListener(listener);
+	/**
+	 * Highlights the bet field
+	 */
+	public void selectBet() {
+		playerBetField.requestFocus();
+		playerBetField.selectAll();
 	}
 	
+	@Override
+	public void onPlayerSelected(Player player) {
+		setSelectedPlayer(player);
+		System.out.println("Player: " + player.toString());
+		setPlayerDice(player.getRollResult());
+	}
 	
-	
-	
+	@Override
+	public void onPlayerDeselected(Player player) {
+		System.out.println("Player deselected");
+	}
+
+	@Override
+	public String getBet() {
+		return playerBetField.getText();
+	}
+
+	@Override
+	public Player getPlayer() {
+		return selectedPlayer;
+	}
+
 }
