@@ -13,7 +13,6 @@ import javax.swing.border.EmptyBorder;
 import controllers.RollPlayerListener;
 import controllers.interfaces.RollPlayerDataSource;
 import model.interfaces.DicePair;
-import model.interfaces.GameEngine;
 import model.interfaces.Player;
 import java.awt.BorderLayout;
 import java.awt.Color;

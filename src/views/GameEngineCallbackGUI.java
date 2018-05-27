@@ -31,8 +31,6 @@ import model.interfaces.Player;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
 /**
@@ -169,7 +167,7 @@ public class GameEngineCallbackGUI extends JFrame implements
 	 */
 	private void setupDialogs() {
 		AddNewPlayerListener listener = new AddNewPlayerListener(gameEngine);
-		addPlayerFormDialog = new AddPlayerFormDialog(gameEngine, listener);
+		addPlayerFormDialog = new AddPlayerFormDialog(listener);
 		listener.setDataSource(addPlayerFormDialog);
 		listener.addDelegate(this);
 		toolbarPanel.setAddPlayerFormDialog(addPlayerFormDialog);

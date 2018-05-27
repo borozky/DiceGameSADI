@@ -10,7 +10,6 @@ import javax.swing.border.EmptyBorder;
 
 import controllers.AddNewPlayerListener;
 import controllers.interfaces.AddNewPlayerDataSource;
-import model.interfaces.GameEngine;
 import java.awt.Dimension;
 import java.awt.Color;
 import javax.swing.BoxLayout;
@@ -40,11 +39,9 @@ public class AddPlayerFormDialog extends JDialog implements AddNewPlayerDataSour
 	private JButton okButton;
 	private JButton cancelButton;
 	private AddNewPlayerListener addNewPlayerListener;
-	private GameEngine gameEngine;
 
 
-	public AddPlayerFormDialog(GameEngine gameEngine, AddNewPlayerListener addNewPlayerListner) {
-		this.gameEngine = gameEngine;
+	public AddPlayerFormDialog(AddNewPlayerListener addNewPlayerListner) {
 		this.addNewPlayerListener = addNewPlayerListner;
 		
 		// "New player", custom-size, centered, and non-resizable
